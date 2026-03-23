@@ -79,11 +79,21 @@
             <a href="#">DISCOVER</a>
           </div>
         </div>
+
+        <div class="mt-4">
+          <button onclick="createAlbumList()" class="btn btn-primary" type="button">
+            Crea lista
+          </button>
+
+          <div id="albumList" class="text-white mt-3 d-none"></div>
+        </div>
+
         <div class="row">
           <div class="col-10">
-            <div id="searchResults" style="display: none">
-              <h2>Search Results</h2>
-              <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 imgLinks py-3"></div>
+            <div id="found" class="d-none">
+              <h2>Search results</h2>
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 imgLinks py-3" id="searchSection">
+              </div>
             </div>
           </div>
         </div>
@@ -114,15 +124,6 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-10">
-            <div id="found" class="d-none">
-              <h2>Search results</h2>
-              <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 imgLinks py-3" id="searchSection">
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -139,16 +140,16 @@
                 <img src="playerbuttons/Shuffle.png" alt="shuffle" />
               </a>
               <a href="#">
-                <img src="playerbuttons/Previous.png" alt="shuffle" />
+                <img src="playerbuttons/Previous.png" alt="previous track" />
               </a>
               <a href="#">
-                <img src="playerbuttons/Play.png" alt="shuffle" />
+                <img src="playerbuttons/Play.png" alt="play" />
               </a>
               <a href="#">
-                <img src="playerbuttons/Next.png" alt="shuffle" />
+                <img src="playerbuttons/Next.png" alt="next track" />
               </a>
               <a href="#">
-                <img src="playerbuttons/Repeat.png" alt="shuffle" />
+                <img src="playerbuttons/Repeat.png" alt="repeat" />
               </a>
             </div>
           </div>

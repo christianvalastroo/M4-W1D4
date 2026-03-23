@@ -1,147 +1,119 @@
-function loadEminem() {
+const ARTISTS = ["eminem", "metallica", "queen"]
+const RESULTS_LIMIT = 4
 
-  const eminemSection = document.getElementById("eminemSection")
-  const eminemContainer = document.getElementById("eminem")
+const getTracks = async (query) => {
+  const response = await fetch(
+    `https://striveschool-api.herokuapp.com/api/deezer/search?q=${encodeURIComponent(query)}`
+  )
 
-  fetch("https://striveschool-api.herokuapp.com/api/deezer/search?q=eminem")
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`)
+  }
 
-    .then(response => response.json())
-
-    .then(data => {
-
-      const songs = data.data.filter(song => song.artist.name === "Eminem")
-
-      eminemSection.innerHTML = ""
-
-      songs.forEach(song => {
-
-        const col = document.createElement("div")
-        col.classList.add("col", "text-center")
-
-        const img = document.createElement("img")
-        img.src = song.album.cover_medium
-        img.classList.add("img-fluid")
-        img.alt = song.title
-
-        const title = document.createElement("p")
-        title.innerText = song.title
-
-        const artist = document.createElement("p")
-        artist.innerText = song.artist.name
-
-        col.appendChild(img)
-        col.appendChild(title)
-        col.appendChild(artist)
-
-        eminemSection.appendChild(col)
-
-      })
-
-      eminemContainer.classList.remove("d-none")
-
-    })
-
-    .catch(error => {
-      console.log("Errore:", error)
-    })
-
+  const { data } = await response.json()
+  return data.slice(0, RESULTS_LIMIT)
 }
 
-loadEminem()
+const createTrackCard = (track) => {
+  const col = document.createElement("div")
+  col.classList.add("col", "text-center", "mb-4")
 
-function loadMetallica() {
+  const img = document.createElement("img")
+  img.src = track.album.cover_big
+  img.alt = `${track.album.title} cover`
+  img.classList.add("img-fluid")
 
-  const metallicaSection = document.getElementById("metallicaSection")
-  const metallicaContainer = document.getElementById("metallica")
+  const description = document.createElement("p")
+  description.textContent = `${track.title} - Album: ${track.album.title}`
 
-  fetch("https://striveschool-api.herokuapp.com/api/deezer/search?q=metallica")
+  col.appendChild(img)
+  col.appendChild(description)
 
-    .then(response => response.json())
-
-    .then(data => {
-
-      const songs = data.data
-
-      songs.forEach(song => {
-
-        const col = document.createElement("div")
-        col.classList.add("col", "text-center")
-
-        const img = document.createElement("img")
-        img.src = song.album.cover_medium
-
-        const title = document.createElement("p")
-        title.innerText = song.title
-
-        const artist = document.createElement("p")
-        artist.innerText = song.artist.name
-
-        col.appendChild(img)
-        col.appendChild(title)
-        col.appendChild(artist)
-
-        metallicaSection.appendChild(col)
-
-      })
-
-      metallicaContainer.classList.remove("d-none")
-
-    })
-
-    .catch(error => {
-      console.log("Errore:", error)
-    })
-
+  return col
 }
 
-loadMetallica()
-
-function loadQueen() {
-
-  const queenSection = document.getElementById("queenSection")
-  const queenContainer = document.getElementById("queen")
-
-  fetch("https://striveschool-api.herokuapp.com/api/deezer/search?q=queen")
-
-    .then(response => response.json())
-
-    .then(data => {
-
-      const songs = data.data
-
-      queenSection.innerHTML = ""
-
-      songs.forEach(song => {
-
-        const col = document.createElement("div")
-        col.classList.add("col", "text-center")
-
-        const img = document.createElement("img")
-        img.src = song.album.cover_medium
-        img.classList.add("img-fluid")
-
-        const title = document.createElement("p")
-        title.innerText = song.title
-
-        const artist = document.createElement("p")
-        artist.innerText = song.artist.name
-
-        col.appendChild(img)
-        col.appendChild(title)
-        col.appendChild(artist)
-
-        queenSection.appendChild(col)
-
-      })
-
-      queenContainer.classList.remove("d-none")
-
-    })
-
-    .catch(error => {
-      console.log("Errore:", error)
-    })
-
+const renderTracks = (tracks, section) => {
+  section.innerHTML = ""
+  tracks.forEach((track) => {
+    section.appendChild(createTrackCard(track))
+  })
 }
 
-loadQueen()
+const populateSection = async (artistName, sectionId, wrapperId) => {
+  try {
+    const tracks = await getTracks(artistName)
+    const wrapper = document.getElementById(wrapperId)
+    const section = document.getElementById(sectionId)
+
+    renderTracks(tracks, section)
+    wrapper.classList.remove("d-none")
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const search = async () => {
+  const searchField = document.getElementById("searchField")
+  const query = searchField.value.trim()
+  const wrapper = document.getElementById("found")
+  const section = document.getElementById("searchSection")
+
+  if (!query) {
+    section.innerHTML = ""
+    wrapper.classList.add("d-none")
+    return
+  }
+
+  try {
+    const tracks = await getTracks(query)
+
+    renderTracks(tracks, section)
+    wrapper.classList.remove("d-none")
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const createAlbumList = async () => {
+  const container = document.getElementById("albumList")
+
+  if (!container.classList.contains("d-none")) {
+    container.innerHTML = ""
+    container.classList.add("d-none")
+    return
+  }
+
+  container.innerHTML = ""
+
+  try {
+    const tracksByArtist = await Promise.all(ARTISTS.map((artist) => getTracks(artist)))
+    const albumTitles = [...new Set(tracksByArtist.flat().map((track) => track.album.title))]
+
+    container.classList.remove("d-none")
+
+    albumTitles.forEach((title) => {
+      const album = document.createElement("p")
+      album.textContent = title
+      container.appendChild(album)
+    })
+  } catch (error) {
+    console.error(error)
+    container.classList.remove("d-none")
+    container.textContent = "Impossibile caricare la lista album."
+  }
+}
+
+window.search = search
+window.createAlbumList = createAlbumList
+
+window.addEventListener("load", () => {
+  populateSection("eminem", "eminemSection", "eminem")
+  populateSection("metallica", "metallicaSection", "metallica")
+  populateSection("queen", "queenSection", "queen")
+
+  document.getElementById("searchField").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      search()
+    }
+  })
+})
