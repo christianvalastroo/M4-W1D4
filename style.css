@@ -51,6 +51,14 @@ ul {
   color: rgb(145, 145, 145);
 }
 
+.search-group {
+  flex-wrap: nowrap;
+}
+
+.search-go-btn {
+  white-space: nowrap;
+}
+
 .signup-btn {
   background-color: white;
   color: black;
