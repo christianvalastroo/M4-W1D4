@@ -48,16 +48,19 @@ const hideLoading = (spinner) => {
 
 // Crea e inserisce una card album nella sezione richiesta.
 const generateCard = (album, section) => {
+  const ancorImgContainer = document.createElement("a")
   const albumConteiner = document.createElement("div")
   const imgAlbum = document.createElement("img")
   const albumName = document.createElement("p")
   const artistName = document.createElement("p")
 
+  ancorImgContainer.setAttribute("href", `./details.html?albumid=${album.album.id}`)
   imgAlbum.src = album.album.cover_medium
   albumName.textContent = album.album.title
   artistName.textContent = album.artist.name
-
-  albumConteiner.append(imgAlbum, albumName, artistName)
+  
+  ancorImgContainer.appendChild(imgAlbum)
+  albumConteiner.append(ancorImgContainer, albumName, artistName)
   section.appendChild(albumConteiner)
 }
 
